@@ -1,4 +1,4 @@
-# Wfc
+# WFC
 Overlapping Wave Function Collapse algorithm implemented in Elixir.
 One of the main goal is readability so codebase can be used for learning the algorithm.
 
