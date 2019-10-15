@@ -1,3 +1,4 @@
 %{
+  "abit": {:hex, :abit, "0.2.1", "fd339c5d5dc72eb25985b625f34dc7d5d472c6c7b2705109db1dba9d080c6933", [:mix], [], "hexpm"},
   "png": {:hex, :png, "0.1.1", "57eeab907d4c2b78d4c3803bc355af025248db9ebd612e4275c3cab65b809171", [:rebar], [], "hexpm"},
 }

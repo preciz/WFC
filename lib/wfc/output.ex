@@ -4,7 +4,7 @@ defmodule Wfc.Output do
 
   At any point `to_png` can be used to save the current image of the %Output{} struct.
   """
-  alias Wfc.{Output, Input, Tile, Matrix, Bit}
+  alias Wfc.{Output, Input, Tile, Matrix}
 
   import Bitwise
 
@@ -70,7 +70,7 @@ defmodule Wfc.Output do
 
       value = get(output, pos)
 
-      {{pos, value}, value |> Bit.count_flags()}
+      {{pos, value}, value |> Abit.Bitmask.set_bits_count()}
     end)
     |> Enum.filter(fn {_, count} -> count > 1 end)
     |> Enum.min_by(&elem(&1, 1), fn -> :none end)
