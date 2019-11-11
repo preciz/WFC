@@ -1,4 +1,5 @@
 %{
   "abit": {:hex, :abit, "0.3.1", "d51ea782e6e977e23e9f4765848257ce257f17cbe0fc58249f533916fc923606", [:mix], [], "hexpm"},
+  "matrax": {:hex, :matrax, "0.3.4", "032b6625f1c75c86b2570649cbf3b8c942bd46d89131d8b46aa0b5b67eab9a6b", [:mix], [], "hexpm"},
   "png": {:hex, :png, "0.1.1", "57eeab907d4c2b78d4c3803bc355af025248db9ebd612e4275c3cab65b809171", [:rebar], [], "hexpm"},
 }

@@ -21,6 +21,7 @@ defmodule Wfc.MixProject do
     [
       {:png, "~> 0.1.1"},
       {:abit, "~> 0.3"},
+      {:matrax, "~> 0.3"},
     ]
   end
 end

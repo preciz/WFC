@@ -4,37 +4,6 @@ defmodule Wfc.Matrix do
   """
 
   @doc """
-  Returns a reference for a new atomics with `size` and all indeces set to `value`
-  """
-  def atomics_new(size, value) when is_integer(size) and is_integer(value) do
-    ref = :atomics.new(size * size, signed: false)
-
-    for idx <- 1..(size * size) do
-      :atomics.put(ref, idx, value)
-    end
-
-    ref
-  end
-
-  @doc """
-  Transforms `row` & `col` into index and returns value at index from atomics ref
-  """
-  def atomics_get(ref, {row, col}, size) do
-    index = row * size + col + 1
-
-    :atomics.get(ref, index)
-  end
-
-  @doc """
-  Transforms `row` & `col` into index and puts value at index into atomics ref
-  """
-  def atomics_put(ref, {row, col}, value, size) do
-    index = row * size + col + 1
-
-    :atomics.put(ref, index, value)
-  end
-
-  @doc """
   Returns `nth` relative neighbour positions for `row` & `col`
 
   If `:size` option is provided it filters out of bounds positions.

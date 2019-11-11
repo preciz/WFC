@@ -16,26 +16,16 @@ defmodule Wfc.Output do
   def new(input = %Input{tiles: tiles}, size \\ 64) when is_integer(size) do
     all_flags = tiles |> Enum.reduce(0, fn %Tile{flag: flag}, acc -> acc + flag end)
 
+    matrix = Matrax.new(64, 64)
+
+    Matrax.apply(matrix, fn _ -> all_flags end)
+
     %Output{
       input: input,
-      matrix: Matrix.atomics_new(64, all_flags),
+      matrix: matrix,
       size: size,
       all_flags: all_flags
     }
-  end
-
-  @doc """
-  Returns bitmask at `position` from `matrix`
-  """
-  def get(%Output{matrix: matrix, size: size}, position) do
-    Matrix.atomics_get(matrix, position, size)
-  end
-
-  @doc """
-  Puts bitmask at `position` into `matrix`.
-  """
-  def put(%Output{matrix: matrix, size: size}, position, bitmask) do
-    Matrix.atomics_put(matrix, position, bitmask, size)
   end
 
   @doc """
@@ -43,7 +33,7 @@ defmodule Wfc.Output do
 
   If there is no lowest possibilities position left, it returns `%Output{}`.
   """
-  def collapse(output = %Output{input: %Input{tiles: tiles}}) do
+  def collapse(%Output{matrix: matrix, input: %Input{tiles: tiles}} = output) do
     case output |> lowest_possibilities_position do
       :none ->
         output
@@ -52,7 +42,7 @@ defmodule Wfc.Output do
         %Tile{flag: flag} =
           Tile.filter_by_possibilities(tiles, possibilities) |> Tile.weighted_random_tile()
 
-        put(output, position, flag)
+        Matrax.put(matrix, position, flag)
 
         propagate_neighbours(output, [position])
 
@@ -63,12 +53,12 @@ defmodule Wfc.Output do
   @doc """
   Returns position with lowest possibilies or `nil` if there is no position with possibilies > 1.
   """
-  def lowest_possibilities_position(output = %Output{size: size}) do
+  def lowest_possibilities_position(%Output{size: size, matrix: matrix}) do
     0..(size * size - 1)
     |> Enum.map(fn pos ->
       pos = {div(pos, size), rem(pos, size)}
 
-      value = get(output, pos)
+      value = Matrax.get(matrix, pos)
 
       {{pos, value}, value |> Abit.Bitmask.set_bits_count()}
     end)
@@ -83,8 +73,8 @@ defmodule Wfc.Output do
 
   def propagate_neighbours(output, [], _reset_count), do: output
 
-  def propagate_neighbours(output, [position | tl], reset_count) do
-    possibilities = output |> get(position)
+  def propagate_neighbours(%Output{matrix: matrix} = output, [position | tl], reset_count) do
+    possibilities = Matrax.get(matrix, position)
 
     case possibilities do
       0 ->
@@ -114,7 +104,7 @@ defmodule Wfc.Output do
   def do_propagate_neighbours(
         {row, col},
         possibilities,
-        output = %Output{size: size, input: %Input{tiles: tiles}}
+        %Output{matrix: matrix, size: size, input: %Input{tiles: tiles}}
       ) do
     constraints =
       tiles
@@ -125,7 +115,7 @@ defmodule Wfc.Output do
     |> Enum.reduce(
       [],
       fn {n_row, n_col}, further_propagate ->
-        n_possibilities = output |> get({n_row, n_col})
+        n_possibilities = Matrax.get(matrix, {n_row, n_col})
 
         n_relative_position = {n_row - row, n_col - col}
 
@@ -134,7 +124,7 @@ defmodule Wfc.Output do
         if updated_possibilities == n_possibilities do
           further_propagate
         else
-          put(output, {n_row, n_col}, updated_possibilities)
+          Matrax.put(matrix, {n_row, n_col}, updated_possibilities)
 
           [{n_row, n_col} | further_propagate]
         end
@@ -147,17 +137,17 @@ defmodule Wfc.Output do
 
   This is required if a contradiction is reached
   """
-  def reset_area(position, output = %Output{size: size, all_flags: all_flags}, reset_count) do
+  def reset_area(position, %Output{matrix: matrix, size: size, all_flags: all_flags}, reset_count) do
     neighbours_to_reset = Matrix.nth_neighbours(position, 1..reset_count, size: size)
 
     [position | neighbours_to_reset]
-    |> Enum.each(fn pos -> put(output, pos, all_flags) end)
+    |> Enum.each(fn pos -> Matrax.put(matrix, pos, all_flags) end)
   end
 
   @doc """
-  Saves %Output{} into png
+  Saves `%Wfc.Output{}` into png
   """
-  def to_png(output = %Output{input: %Input{tiles: tiles}, size: size}) do
+  def to_png(%Output{matrix: matrix, input: %Input{tiles: tiles}, size: size}) do
     {:ok, file} = :file.open("output.png", [:write])
 
     png =
@@ -170,7 +160,7 @@ defmodule Wfc.Output do
     for pos <- 0..(size * size - 1) do
       pos = {div(pos, size), rem(pos, size)}
 
-      get(output, pos)
+      Matrax.get(matrix, pos)
     end
     |> Enum.map(fn possibilities ->
       %Tile{colors: [[first_pixel | _] | _]} =
