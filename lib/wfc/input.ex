@@ -4,7 +4,10 @@ defmodule Wfc.Input do
 
   The input matrix should be a matrix with RGB tuples like: [[{255, 255, 255}, {0, 0, 0}], ...]
 
-  Usage: Wfc.Input.new(input_matrix)
+  ## Examples
+
+      Wfc.Input.new(input_matrix)
+
   """
 
   alias Wfc.{Input, Tile, Matrix}
@@ -14,7 +17,8 @@ defmodule Wfc.Input do
   defstruct [:matrix, :tiles, :tile_size]
 
   @doc """
-  Returns %Input{} struct that contains everything for Output module to start a collapse.
+  Returns `%Wfc.Input{}` struct that contains everything for
+  `Wfc.Output` module to start a collapse.
   """
   def new(input, tile_size \\ 2) when is_list(input) and is_integer(tile_size) do
     %Input{

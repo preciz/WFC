@@ -1,9 +1,9 @@
 defmodule Wfc.Tile do
   @moduledoc """
-  flag: is the flag position of the tile in the constraint/possiblities bitmask
-  colors: the color matrix of the tile
-  constraints: in the neighbouring directions which tiles flags are allowed
-  weight: the weight of the tile in the original input, used in weighted_random_tile.
+    * flag: is the flag position of the tile in the constraint/possiblities bitmask
+    * colors: the color matrix of the tile
+    * constraints: in the neighbouring directions which tiles flags are allowed
+    * weight: the weight of the tile in the original input, used in weighted_random_tile.
   """
 
   alias Wfc.{Tile, Matrix}
@@ -13,7 +13,7 @@ defmodule Wfc.Tile do
   defstruct([:flag, :colors, :constraints, :weight])
 
   @doc """
-  Merges `constraints` of `tiles`.
+  Merges constraints of `tiles`.
   """
   def merge_constraints(tiles) do
     tiles
@@ -52,7 +52,7 @@ defmodule Wfc.Tile do
   end
 
   @doc """
-  Returns a random `%Tile{}` from the list of `tiles`.
+  Returns a random `%Wfc.Tile{}` from the list of `tiles`.
   """
   def weighted_random_tile(tiles) do
     weight_sum = tiles |> Enum.reduce(0, fn %Tile{weight: weight}, acc -> weight + acc end)
