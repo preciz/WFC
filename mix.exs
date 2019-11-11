@@ -20,7 +20,7 @@ defmodule Wfc.MixProject do
   defp deps do
     [
       {:png, "~> 0.1.1"},
-      {:abit, "~> 0.2"},
+      {:abit, "~> 0.3"},
     ]
   end
 end
