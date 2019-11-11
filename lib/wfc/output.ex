@@ -1,8 +1,8 @@
 defmodule Wfc.Output do
   @moduledoc """
-  This module contains the code to create an %Output{} struct from an %Input{} struct and collapse it.
+  This module contains the code to create a %Wfc.Output{} struct from a `%Wfc.Input{}` struct and collapse it.
 
-  At any point `to_png` can be used to save the current image of the %Output{} struct.
+  At any point `to_png/2` can be used to save the current image of the `%Wfc.Output{}` struct.
   """
   alias Wfc.{Output, Input, Tile, Matrix}
 
@@ -11,7 +11,7 @@ defmodule Wfc.Output do
   defstruct [:input, :matrix, :size, :all_flags]
 
   @doc """
-  Returns %Output{} ready to be collapsed by `collapse/1`.
+  Returns `%Wfc.Output{}` ready to be collapsed by `collapse/1`.
   """
   def new(input = %Input{tiles: tiles}, size \\ 64) when is_integer(size) do
     all_flags = tiles |> Enum.reduce(0, fn %Tile{flag: flag}, acc -> acc + flag end)
